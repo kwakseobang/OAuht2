@@ -15,7 +15,6 @@ public class CustomOauth2User implements OAuth2User {
     private final Member member;
     private final Map<String, Object> attributes;
 
-
     public CustomOauth2User(Member member, Map<String,Object> attributes) {
         this.member = member;
         this.attributes =attributes;

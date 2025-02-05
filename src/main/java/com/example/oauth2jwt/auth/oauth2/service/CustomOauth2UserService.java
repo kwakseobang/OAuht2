@@ -75,21 +75,17 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
     }
 
     private OAuth2User processOAuth2User(OAuth2UserRequest userRequest, OAuth2User oAuth2User) {
-
          // registrationId으로 SocialType 저장.
        SocialType socialType = getSocialType(userRequest.getClientRegistration().getRegistrationId());
         Oauth2UserInfo userInfo = Oauth2UserInfoFactory.getOAuth2UserInfo(socialType, oAuth2User.getAttributes());// 소셜 종류에 따라 정보 가져옴
-        Member member = memberRepository.findBySocialLoginId(
-                userInfo.getProviderId()
-        ).orElse(null);
-
-        if (member != null) {  // 로그인 여부 체크
-            updateMember(member,userInfo);
-        }else {
-            member = createMember(userInfo, socialType);
-//            memberRepository.flush();  // 즉시 저장 반영
-        }
+        Member member = findOrCreateMember(userInfo,socialType);
         return new CustomOauth2User(member,oAuth2User.getAttributes());
+    }
+
+    private Member findOrCreateMember(Oauth2UserInfo userInfo, SocialType socialType) {
+        return memberRepository.findBySocialLoginId(userInfo.getProviderId())
+                .map(existingMember -> updateMember(existingMember, userInfo))
+                .orElseGet(() -> createMember(userInfo, socialType));
     }
 
     // 기존에 있던 회원이더라도 이메일이나 닉네임이 변경되었을 수도 있으니 업데이트
@@ -100,7 +96,6 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
     }
 
     private Member createMember(Oauth2UserInfo userInfo,SocialType socialType) {
-
         Member member = Member.builder()
                 .nickname(userInfo.getName())
                 .username(userInfo.getEmail())
@@ -108,18 +103,16 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
                 .socialLoginId(userInfo.getProviderId())
                 .socialType(socialType)
                 .build();
-        log.info("{}", member);
+        log.info("새로운 회원 생성 {} ", member);
         return memberRepository.save(member);
     }
 
     private SocialType getSocialType(String registrationId) {
-        if ("naver".equalsIgnoreCase(registrationId)) {
-            return SocialType.NAVER;
+        switch (registrationId.toLowerCase()) {
+            case "naver": return SocialType.NAVER;
+            case "kakao": return SocialType.KAKAO;
+            default: return SocialType.GOOGLE;
         }
-        if ("kakao".equalsIgnoreCase(registrationId)) {
-            return SocialType.KAKAO;
-        }
-        return SocialType.GOOGLE;
     }
 
 }

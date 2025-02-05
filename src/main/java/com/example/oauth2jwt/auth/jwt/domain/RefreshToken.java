@@ -17,8 +17,6 @@ public class RefreshToken {
     private Long memberId;
 
 
-
-
     @Builder(builderClassName = "RefreshTokenSaveBuilder", builderMethodName = "RefreshTokenSaveBuilder")
     public RefreshToken(String token,Long memberId) {
         this.token = token;

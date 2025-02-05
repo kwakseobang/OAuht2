@@ -15,7 +15,6 @@ public class JwtExceptionResponse {
     private String timestamp;
 
 
-
     // 오류
     public JwtExceptionResponse(HttpStatus httpStatus,int status, String message, String timestamp) {
         this.httpStatus = httpStatus;
