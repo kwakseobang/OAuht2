@@ -1,7 +1,7 @@
 package com.example.oauth2jwt.auth.jwt.response;
 
 
-import com.example.oauth2jwt.global.response.responseItem.ErrorCode;
+import com.example.oauth2jwt.global.error.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;

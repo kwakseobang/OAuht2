@@ -3,7 +3,7 @@ package com.example.oauth2jwt.auth.jwt.provider;
 
 import com.example.oauth2jwt.auth.jwt.JwtProperties;
 import com.example.oauth2jwt.global.exception.AuthenticationException;
-import com.example.oauth2jwt.global.response.responseItem.ErrorCode;
+import com.example.oauth2jwt.global.error.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;

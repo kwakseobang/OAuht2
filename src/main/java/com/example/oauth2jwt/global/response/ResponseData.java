@@ -1,6 +1,9 @@
 package com.example.oauth2jwt.global.response;
 
-import com.example.oauth2jwt.global.response.responseItem.ResponseCode;
+import com.example.oauth2jwt.global.error.ErrorCode;
+import com.example.oauth2jwt.global.response.responseItem.SuccessCode;
+import com.example.oauth2jwt.utils.TimeConverter;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -14,49 +17,63 @@ public class ResponseData<T> {
 
     private final int status;
     private final String message;
-    private final ResponseCode code;
+    private final SuccessCode successCode;
+    private final ErrorCode errorCode;
+    private final String timestamp;
     private T data;
 
     // response data가 없을때
-    public static ResponseEntity<ResponseData> toResponseEntity(ResponseCode responseCode) {
+    public static ResponseEntity<ResponseData> success(SuccessCode successCode) {
         return ResponseEntity
-                .status(responseCode.getHttpStatus())
+                .status(successCode.getHttpStatus())
                 .body(ResponseData.builder()
-                        .status(responseCode.getHttpStatus())
-                        .message(responseCode.getMessage())
-                        .code(responseCode)
+                        .status(successCode.getHttpStatus())
+                        .message(successCode.getMessage())
+                        .successCode(successCode)
+                        .timestamp(TimeConverter.DatetimeToString(LocalDateTime.now()))
                         .build()
                 );
     }
 
     // response data가 있을때
-    public static <T> ResponseEntity<ResponseData<T>> toResponseEntity(
-            ResponseCode responseCode, T data) {
+    public static <T> ResponseEntity<ResponseData<T>> success(
+            SuccessCode successCode, T data) {
         return ResponseEntity
-                .status(responseCode.getHttpStatus())
+                .status(successCode.getHttpStatus())
                 .body(ResponseData.<T>builder()
-                        .status(responseCode.getHttpStatus())
-                        .message(responseCode.getMessage())
-                        .code(responseCode)
+                        .status(successCode.getHttpStatus())
+                        .message(successCode.getMessage())
+                        .successCode(successCode)
                         .data(data)
+                        .timestamp(TimeConverter.DatetimeToString(LocalDateTime.now()))
+                        .build()
+                );
+    }
+    public static ResponseEntity<ResponseData> error(ErrorCode errorCode) {
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(ResponseData.builder()
+                        .status(errorCode.getHttpStatus())
+                        .message(errorCode.getMessage())
+                        .errorCode(errorCode)
+                        .timestamp(TimeConverter.DatetimeToString(LocalDateTime.now()))
+                        .build()
+                );
+    }
+    public static <T> ResponseEntity<ResponseData<T>> error(
+            ErrorCode errorCode, T data) {
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(ResponseData.<T>builder()
+                        .status(errorCode.getHttpStatus())
+                        .message(errorCode.getMessage())
+                        .errorCode(errorCode)
+                        .data(data)
+                        .timestamp(TimeConverter.DatetimeToString(LocalDateTime.now()))
                         .build()
                 );
     }
 
-    // response data와 header가 있을때
-    public static <T> ResponseEntity<ResponseData<T>> toResponseEntity(
-            ResponseCode responseCode, MultiValueMap<String, String> header, T data) {
-        return ResponseEntity
-                .status(responseCode.getHttpStatus())
-                .header(String.valueOf(header))
-                .body(ResponseData.<T>builder()
-                        .status(responseCode.getHttpStatus())
-                        .message(responseCode.getMessage())
-                        .code(responseCode)
-                        .data(data)
-                        .build()
-                );
-    }
 
 }
 

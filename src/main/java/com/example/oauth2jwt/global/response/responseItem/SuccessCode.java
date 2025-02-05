@@ -1,13 +1,11 @@
 package com.example.oauth2jwt.global.response.responseItem;
 
-import com.example.oauth2jwt.global.response.responseItem.StatusCode;
-import com.example.oauth2jwt.global.response.responseItem.SuccessMessage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum ResponseCode {
+public enum SuccessCode {
 
     // Member 관련 성공 응답
     CREATED_MEMBER(StatusCode.CREATED, SuccessMessage.CREATED_MEMBER),
