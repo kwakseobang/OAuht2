@@ -1,4 +1,4 @@
-package com.example.oauth2jwt.global.exception;
+package com.example.oauth2jwt.global.error.exception;
 import com.example.oauth2jwt.global.response.responseItem.ErrorCode;
 
 
@@ -15,7 +15,7 @@ public class CustomException extends  RuntimeException{
         public CustomException(ErrorCode errorCode) {
             this.errorCode = errorCode;
         }
-        public CustomException(ErrorCode errorCode, String message) {
+        public CustomException(ErrorCode errorCode, Object data) {
             this.errorCode = errorCode;
             this.message = message;
         }
