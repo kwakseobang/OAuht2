@@ -1,6 +1,5 @@
-package com.example.oauth2jwt.global.response.responseItem;
+package com.example.oauth2jwt.global.error;
 
-import com.example.oauth2jwt.global.response.responseItem.ErrorMessage;
 import com.example.oauth2jwt.global.response.responseItem.StatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

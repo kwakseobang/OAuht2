@@ -1,4 +1,4 @@
-package com.example.oauth2jwt.global.response.responseItem;
+package com.example.oauth2jwt.global.error;
 
 public class ErrorMessage {
 
