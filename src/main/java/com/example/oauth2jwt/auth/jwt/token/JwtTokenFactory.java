@@ -1,4 +1,4 @@
-package com.example.oauth2jwt.auth.jwt.provider;
+package com.example.oauth2jwt.auth.jwt.token;
 
 import com.example.oauth2jwt.auth.jwt.domain.RefreshToken;
 import com.example.oauth2jwt.auth.jwt.repository.RefreshTokenRepository;

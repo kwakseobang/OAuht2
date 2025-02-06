@@ -1,7 +1,6 @@
 package com.example.oauth2jwt.member.infrastructure;
 
 
-import com.example.oauth2jwt.auth.infrastructure.MemberAppender;
 import com.example.oauth2jwt.global.error.ErrorCode;
 import com.example.oauth2jwt.global.exception.CustomException;
 import com.example.oauth2jwt.member.domain.Member;

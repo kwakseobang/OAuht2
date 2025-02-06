@@ -1,18 +1,14 @@
 package com.example.oauth2jwt.auth.oauth2.handler;
 
-import com.example.oauth2jwt.auth.jwt.provider.JwtProvider;
-import com.example.oauth2jwt.auth.jwt.domain.MemberTokens;
-import com.example.oauth2jwt.auth.jwt.domain.RefreshToken;
-import com.example.oauth2jwt.auth.jwt.repository.RefreshTokenRepository;
+import com.example.oauth2jwt.auth.jwt.token.JwtProvider;
+import com.example.oauth2jwt.auth.jwt.dto.MemberTokens;
 import com.example.oauth2jwt.auth.oauth2.dto.CustomOauth2User;
 import com.example.oauth2jwt.utils.CookieUtil;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -39,10 +35,10 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         Long memberId = oAuth2User.getId();
         String role = getRoleFromAuthentication(authentication);
 
-        MemberTokens memberTokens = jwtProvider.createTokenAndSaveRefreshToken(memberId,role);
+        MemberTokens memberTokens = jwtProvider.createTokensAndSaveRefreshToken(memberId,role);
 
-        String accessToken =  memberTokens.getAccessToken();
-        String refreshToken = memberTokens.getRefreshToken();
+        String accessToken =  memberTokens.accessToken();
+        String refreshToken = memberTokens.refreshToken();
         addRefreshTokenCookie(response,refreshToken);
 
         // 액세스 토큰을 응답 헤더에 추가

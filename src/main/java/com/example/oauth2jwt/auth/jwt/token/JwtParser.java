@@ -1,7 +1,6 @@
-package com.example.oauth2jwt.auth.jwt.provider;
+package com.example.oauth2jwt.auth.jwt.token;
 
 
-import com.example.oauth2jwt.auth.jwt.JwtProperties;
 import com.example.oauth2jwt.global.exception.AuthenticationException;
 import com.example.oauth2jwt.global.error.ErrorCode;
 import io.jsonwebtoken.Claims;

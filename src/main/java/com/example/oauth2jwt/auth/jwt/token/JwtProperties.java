@@ -1,4 +1,4 @@
-package com.example.oauth2jwt.auth.jwt;
+package com.example.oauth2jwt.auth.jwt.token;
 
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;

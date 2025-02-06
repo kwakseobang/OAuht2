@@ -1,6 +1,7 @@
 package com.example.oauth2jwt.auth.jwt.filter;
 
-import com.example.oauth2jwt.auth.jwt.provider.JwtProvider;
+import com.example.oauth2jwt.auth.jwt.token.JwtProvider;
+import com.example.oauth2jwt.auth.jwt.token.JwtValidator;
 import com.example.oauth2jwt.auth.jwt.response.JwtErrorResponder;
 import com.example.oauth2jwt.global.error.ErrorCode;
 import com.example.oauth2jwt.utils.HeaderUtil;
@@ -56,6 +57,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
     private final JwtProvider jwtProvider;
+    private final JwtValidator jwtValidator;
     private final JwtErrorResponder jwtErrorResponder;
 
     private static final List<String> EXCLUDE_PATHS = List.of(
@@ -77,7 +79,7 @@ public class JwtFilter extends OncePerRequestFilter {
         // JWT에서 토큰을 이용해 인증 정보를 추출 후 UsernamePasswordAuthenticationToken을 생성해 전달
         // Authentication 객체를 생성하고, 이를 SecurityContext에 설정하여 이후의 요청에서 인증 정보를 사용할 수 있도록 힘
         try {
-            jwtProvider.validateAccessToken(token);
+            jwtValidator.validateToken(token);
             Authentication authentication = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);

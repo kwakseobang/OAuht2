@@ -1,6 +1,5 @@
-package com.example.oauth2jwt.auth.jwt.provider;
+package com.example.oauth2jwt.auth.jwt.token;
 
-import com.example.oauth2jwt.auth.jwt.JwtProperties;
 import com.example.oauth2jwt.auth.jwt.dto.MemberTokens;
 import java.util.Collections;
 import javax.crypto.SecretKey;
@@ -33,8 +32,8 @@ public class JwtProvider {
         this.refreshTokenExpireTime = jwtProperties.getRefreshTokenExpireTime();
     }
 
-    public MemberTokens createTokenAndSaveRefreshToken(Long memberId, String roleType) {
-        String accessToken = jwtTokenFactory.createToken(memberId, secretKey, roleType, "access", accessTokenExpireTime);
+    public MemberTokens createTokensAndSaveRefreshToken(Long memberId, String roleType) {
+        String accessToken = jwtTokenFactory.createToken(memberId, secretKey, roleType, "access", 10000L);
         String refreshToken = jwtTokenFactory.createToken(memberId, secretKey, roleType, "refresh", refreshTokenExpireTime);
         jwtTokenFactory.saveRefreshToken(refreshToken,memberId);
         return new MemberTokens(accessToken,refreshToken);

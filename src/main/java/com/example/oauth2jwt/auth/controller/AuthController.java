@@ -9,6 +9,7 @@ import com.example.oauth2jwt.global.response.responseItem.SuccessCode;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,6 +42,13 @@ public class AuthController {
                 new AccessTokenResponseDto(accessToken));
     }
 
-//    @PostMapping("/reissue")
-
+    @PostMapping("/reissue")
+    public ResponseEntity<ResponseData<AccessTokenResponseDto>> reissue(
+            HttpServletResponse response,
+            @CookieValue("refresh_token") final String refreshTokenRequest
+    ) {
+        String accessToken = authService.reissue(response, refreshTokenRequest);
+        return ResponseData.success(SuccessCode.REISSUE_SUCCESS,
+                new AccessTokenResponseDto(accessToken));
+    }
 }
