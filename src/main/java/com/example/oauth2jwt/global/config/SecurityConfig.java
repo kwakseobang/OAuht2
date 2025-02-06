@@ -48,7 +48,9 @@ public class SecurityConfig {
         http
                 .csrf((auth) -> auth.disable())  // jwt를 이용한 Stateless 방식으로 사용하가에 csrf disable
                 .formLogin((auth) -> auth.disable())    //From 로그인 방식 disable
-                .httpBasic((auth) -> auth.disable());       //HTTP Basic 인증 방식 disable
+                .httpBasic((auth) -> auth.disable())       //HTTP Basic 인증 방식 disable
+                .sessionManagement((session) -> session       //세션 설정 : STATELESS - jwt 방식 사용할 경우
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         //oauth2
         http
                 .oauth2Login((oauth2) -> oauth2
@@ -64,17 +66,17 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers(permitAllUrl).permitAll() //모두 허용
+                        .requestMatchers(adminUrl).hasRole("ADMIN") //
+                        .requestMatchers(hasRoleUrl).hasAnyRole("ADMIN", "MEMBER")
                         .anyRequest().authenticated());
         // 예외 처리
         http
                 .exceptionHandling(handle -> handle
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtAccessDeniedHandler));
-        //세션 설정 : STATELESS - jwt 방식 사용할 경우
-        http
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+
 
         // 웹 브라우저는 보안 상의 이유로 동일 출처(프로토콜,호스트,포트가 == SOP)에서만 리소스를 공유할 수 있다.
         // cors(Cross-Origin Resource Sharing, 교차 출처 리소스 공유)를 설정해줌으로써 서로 다른 출처 간의 리소스를 공유할 수 있게 한다.

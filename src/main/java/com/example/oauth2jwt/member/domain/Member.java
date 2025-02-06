@@ -10,10 +10,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Table(name ="member")
 @Getter
 @NoArgsConstructor
 @Entity
@@ -40,12 +42,14 @@ public class Member extends BaseEntity {
     private String profileImgUrl;
     @Column(name = "social_login_id",nullable = true)
     private String socialLoginId;
+
     @Column(name = "social_type",nullable = false)
     @Enumerated(EnumType.STRING)
     private SocialType socialType; // 일반 로그인일 경우 Local
 
 
-    @Builder
+    // 빌더 패턴에서 값이 들어오지 않을 경우 기본 타입은 0,false 같은 타입 저장, 참조 타입은 null
+    @Builder(builderClassName = "SaveBuilder", builderMethodName = "SaveBuilder")
     public Member(
             String username,
             String password,

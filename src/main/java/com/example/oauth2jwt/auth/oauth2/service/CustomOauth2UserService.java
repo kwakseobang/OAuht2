@@ -95,8 +95,9 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         return member;
     }
 
+
     private Member createMember(Oauth2UserInfo userInfo,SocialType socialType) {
-        Member member = Member.builder()
+        Member member = Member.SaveBuilder()
                 .nickname(userInfo.getName())
                 .username(userInfo.getEmail())
                 .roleType(RoleType.MEMBER)
