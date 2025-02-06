@@ -1,8 +1,7 @@
 package com.example.oauth2jwt.auth.jwt.provider;
 
 import com.example.oauth2jwt.auth.jwt.JwtProperties;
-import com.example.oauth2jwt.auth.jwt.domain.MemberTokens;
-import com.example.oauth2jwt.auth.jwt.domain.RefreshToken;
+import com.example.oauth2jwt.auth.jwt.dto.MemberTokens;
 import java.util.Collections;
 import javax.crypto.SecretKey;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,9 +50,7 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(memberId, null, Collections.singletonList(authority));
     }
 
-    public void validateAccessToken(String accessToken) {
-        jwtParser.parseToken(accessToken);
-    }
+
 
 
 }

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenFactory {
 
-    private static final String MEMBER_ID_KEY = "id";
     private static final String CATEGORY_KEY = "category";
     private static final String AUTHORITIES_KEY = "auth";
 
@@ -26,7 +25,6 @@ public class JwtTokenFactory {
 
         return Jwts.builder()
                 .subject(String.valueOf(memberId))
-                .claim(MEMBER_ID_KEY, memberId)
                 .claim(CATEGORY_KEY, category)
                 .claim(AUTHORITIES_KEY, role)
                 .expiration(validity)
