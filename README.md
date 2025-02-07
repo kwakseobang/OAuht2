@@ -1,7 +1,5 @@
-# spring 학습 모음
-- branch 별로 학습한 주제를 나눔.
+# OAuth2 학습
  
-- 현재 velog API 제작 예정
 
 
 
