@@ -1,6 +1,10 @@
 package com.example.oauth2jwt.auth.jwt.token;
 
+import com.example.oauth2jwt.auth.jwt.domain.RefreshToken;
 import com.example.oauth2jwt.auth.jwt.dto.MemberTokens;
+import com.example.oauth2jwt.auth.jwt.repository.RefreshTokenRepository;
+import com.example.oauth2jwt.global.error.ErrorCode;
+import com.example.oauth2jwt.global.exception.CustomException;
 import java.util.Collections;
 import javax.crypto.SecretKey;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +19,7 @@ public class JwtProvider {
 
     private final JwtParser jwtParser;
     private final JwtTokenFactory jwtTokenFactory;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final SecretKey secretKey;
     private final Long accessTokenExpireTime;
     private final Long refreshTokenExpireTime;
@@ -23,19 +28,22 @@ public class JwtProvider {
     public JwtProvider(
             JwtParser jwtParser,
             JwtTokenFactory jwtTokenFactory,
+            RefreshTokenRepository refreshTokenRepository,
             JwtProperties jwtProperties
+
     ) {
         this.jwtParser = jwtParser;
         this.jwtTokenFactory = jwtTokenFactory;
+        this.refreshTokenRepository = refreshTokenRepository;
         this.secretKey = jwtProperties.getSecretKey();
         this.accessTokenExpireTime = jwtProperties.getAccessTokenExpireTime();
         this.refreshTokenExpireTime = jwtProperties.getRefreshTokenExpireTime();
     }
 
     public MemberTokens createTokensAndSaveRefreshToken(Long memberId, String roleType) {
-        String accessToken = jwtTokenFactory.createToken(memberId, secretKey, roleType, "access", 10000L);
+        String accessToken = jwtTokenFactory.createToken(memberId, secretKey, roleType, "access", 1000L);
         String refreshToken = jwtTokenFactory.createToken(memberId, secretKey, roleType, "refresh", refreshTokenExpireTime);
-        jwtTokenFactory.saveRefreshToken(refreshToken,memberId);
+        jwtTokenFactory.saveRefreshToken(refreshToken,accessToken,memberId,refreshTokenExpireTime );
         return new MemberTokens(accessToken,refreshToken);
     }
 
@@ -49,7 +57,10 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(memberId, null, Collections.singletonList(authority));
     }
 
-
+    public RefreshToken getRefreshTokenInfo(Long id) {
+        return  refreshTokenRepository.findById(id).orElseThrow(() ->  new CustomException(
+                ErrorCode.NOT_FOUND_MEMBER));
+    }
 
 
 }

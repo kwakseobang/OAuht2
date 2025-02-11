@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @RequiredArgsConstructor
@@ -32,12 +33,19 @@ public class JwtTokenFactory {
                 .compact();
     }
 
-    public void saveRefreshToken(String token, Long memberId) {
-        RefreshToken refreshToken = RefreshToken.RefreshTokenSaveBuilder()
-                .token(token)
+    public void saveRefreshToken(String refreshToken,String accessToken, Long memberId, Long ttl) {
+        RefreshToken newRefreshToken = RefreshToken.SaveBuilder()
+                .refreshToken(refreshToken)
+                .accessToken(accessToken)
                 .memberId(memberId)
+                .ttl(ttl)
                 .build();
-        refreshTokenRepository.save(refreshToken);
+        refreshTokenRepository.save(newRefreshToken);
     }
 
+    @Transactional
+    public void removeRefreshToken(String accessToken) {
+        refreshTokenRepository.findByAccessToken(accessToken)
+                .ifPresent(refreshToken -> refreshTokenRepository.delete(refreshToken));
+    }
 }
