@@ -1,9 +1,12 @@
 package com.example.oauth2jwt.auth.jwt.token;
 
 import com.example.oauth2jwt.auth.jwt.domain.RefreshToken;
+import com.example.oauth2jwt.auth.jwt.domain.TemporaryToken;
 import com.example.oauth2jwt.auth.jwt.repository.RefreshTokenRepository;
+import com.example.oauth2jwt.auth.jwt.repository.TemporaryTokenRepository;
 import io.jsonwebtoken.Jwts;
 import java.util.Date;
+import java.util.UUID;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,11 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Component
 public class JwtTokenFactory {
-
     private static final String CATEGORY_KEY = "category";
     private static final String AUTHORITIES_KEY = "auth";
 
     private final RefreshTokenRepository refreshTokenRepository;
+    private final TemporaryTokenRepository temporaryTokenRepository;
 
     public String createToken(Long memberId, SecretKey key, String role, String category,
             Long expiredMs) {
@@ -33,19 +36,21 @@ public class JwtTokenFactory {
                 .compact();
     }
 
-    public void saveRefreshToken(String refreshToken,String accessToken, Long memberId, Long ttl) {
+    public void saveRefreshToken(String refreshToken, String accessToken, Long memberId) {
         RefreshToken newRefreshToken = RefreshToken.SaveBuilder()
                 .refreshToken(refreshToken)
                 .accessToken(accessToken)
                 .memberId(memberId)
-                .ttl(ttl)
                 .build();
         refreshTokenRepository.save(newRefreshToken);
     }
 
-    @Transactional
-    public void removeRefreshToken(String accessToken) {
-        refreshTokenRepository.findByAccessToken(accessToken)
-                .ifPresent(refreshToken -> refreshTokenRepository.delete(refreshToken));
+    public void saveTemporaryToken(String tempToken, String accessToken) {
+
+        TemporaryToken temporaryToken = TemporaryToken.builder()
+                .temporaryToken(tempToken)
+                .accessToken(accessToken)
+                .build();
+        temporaryTokenRepository.save(temporaryToken);
     }
 }

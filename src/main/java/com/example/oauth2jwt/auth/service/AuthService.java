@@ -4,10 +4,12 @@ package com.example.oauth2jwt.auth.service;
 import com.example.oauth2jwt.auth.dto.request.SignUpData;
 import com.example.oauth2jwt.auth.infrastructure.MemberAppender;
 import com.example.oauth2jwt.auth.jwt.domain.RefreshToken;
+import com.example.oauth2jwt.auth.jwt.domain.TemporaryToken;
 import com.example.oauth2jwt.auth.jwt.dto.MemberTokens;
 import com.example.oauth2jwt.auth.jwt.dto.TokenInfo;
 import com.example.oauth2jwt.auth.jwt.token.JwtCleaner;
 import com.example.oauth2jwt.auth.jwt.token.JwtProvider;
+import com.example.oauth2jwt.auth.jwt.token.JwtTokenFactory;
 import com.example.oauth2jwt.auth.jwt.token.JwtValidator;
 import com.example.oauth2jwt.global.error.ErrorCode;
 import com.example.oauth2jwt.global.exception.AuthenticationException;
@@ -67,10 +69,16 @@ public class AuthService {
             throw new CustomException(ErrorCode.TOKEN_ERROR);
         }
         jwtCleaner.deleteAccessTokenAndRefreshToken(memberId);     // refresh token 은 일회용이라 삭제
-        MemberTokens memberTokens = jwtProvider.createTokensAndSaveRefreshToken(memberId, role);
-        log.info("memberTokens: " + memberTokens.accessToken());// access token & refresh token 재발급
-        log.info("memberTokens: " + memberTokens.refreshToken());// access token & refresh token 재발급
+        MemberTokens memberTokens = jwtProvider.createTokensAndSaveRefreshToken(memberId, role);// access token & refresh token 재발급
+        log.info("memberTokens: " + memberTokens.accessToken());
+        log.info("memberTokens: " + memberTokens.refreshToken());
         response.addCookie(CookieUtil.createCookie("refresh_token", memberTokens.refreshToken()));           // RefreshToken 쿠키에 저장.
         return memberTokens.accessToken();
+    }
+
+    public String getAccessTokenFromTempToken(String tempToken) {
+
+        TemporaryToken temporaryToken =  jwtProvider.getTemporaryTokenInfo(tempToken);
+        return temporaryToken.getAccessToken();
     }
 }

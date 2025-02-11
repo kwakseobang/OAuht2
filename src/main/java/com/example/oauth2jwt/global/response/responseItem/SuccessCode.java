@@ -15,6 +15,7 @@ public enum SuccessCode {
 
     // Token 성공 응답
     REISSUE_SUCCESS(StatusCode.OK, SuccessMessage.REISSUE_SUCCESS),
+    ACCESS_TOKEN_SUCCESS(StatusCode.OK, SuccessMessage.ACCESS_TOKEN_SUCCESS),
     // 토큰 유효 응답
     TOKEN_IS_VALID(StatusCode.OK, SuccessMessage.TOKEN_IS_VALID),
 

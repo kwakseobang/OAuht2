@@ -22,6 +22,8 @@ public class SuccessMessage {
     // < Token >
     public static final String TOKEN_IS_VALID = "VALID - 유효한 토큰  ";
     public static final String REISSUE_SUCCESS = "SUCCESS - JWT Access 토큰 재발급 성공";
+    public static final String ACCESS_TOKEN_SUCCESS = "SUCCESS - JWT Access 토큰 GET ";
+
 
 }
 
