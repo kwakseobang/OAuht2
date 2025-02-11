@@ -2,6 +2,7 @@ package com.example.oauth2jwt.auth.oauth2.handler;
 
 import com.example.oauth2jwt.auth.jwt.token.JwtProvider;
 import com.example.oauth2jwt.auth.jwt.dto.MemberTokens;
+import com.example.oauth2jwt.auth.oauth2.domain.SocialType;
 import com.example.oauth2jwt.auth.oauth2.dto.CustomOauth2User;
 import com.example.oauth2jwt.utils.CookieUtil;
 import jakarta.servlet.ServletException;
@@ -16,6 +17,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /* !!! 버그 발생 !!! -> 기존에 Refresh토큰은 쿠키 AccessToken은 헤더에 담은 후 리다이렉팅 했음.
     - 이 과정에서 리다이렉팅 할 경우 헤더에 담은 AccessToken이 소실 됨. why?
@@ -32,10 +34,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
     private final JwtProvider jwtProvider;
     private static final String REDIRECT_URL = "http://localhost:3000/";
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String BEARER = "Bearer ";
+
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,
@@ -47,18 +49,17 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         Long memberId = oAuth2User.getId();
         String role = getRoleFromAuthentication(authentication);
 
-        MemberTokens memberTokens = jwtProvider.createTokensAndSaveRefreshToken(memberId,role);
+        MemberTokens memberTokens = jwtProvider.createTokensAndSaveRefreshToken(memberId, role);
 
-        String accessToken =  memberTokens.accessToken();
+        String accessToken = memberTokens.accessToken();
+        String temporaryTokenKey = jwtProvider.getTemporaryTokenKey(accessToken);
         String refreshToken = memberTokens.refreshToken();
-        addRefreshTokenCookie(response,refreshToken);
+        addRefreshTokenCookie(response, refreshToken);
 
-        // 액세스 토큰을 응답 헤더에 추가
-//        addAuthorizationHeader(response,accessToken);  // 나머지는 잘 돌아가니 해당 부분만 위처럼 바꾸면 사용 가능.
-                                                        // 수정방안 다른 브랜치에서 할 예정.
-        redirectToFrontend(request,response);
+        String redirectUrl =  redirectToPageByRole(String.valueOf(oAuth2User.getAuthorities()),temporaryTokenKey,oAuth2User.getName());
 
-        // 여기서 발생한 오류를 어떻게 예외 처리 해야될지모르겠음
+        redirectToFrontend(request, response, redirectUrl);
+
     }
 
     // =================== 유틸성 메소드 ===================
@@ -75,14 +76,33 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     // 리프레시 토큰을 HttpOnly 쿠키에 저장하는 메서드
     private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
 
-        response.addCookie(CookieUtil.createCookie("refresh_token",refreshToken));
-    }
-    private void addAuthorizationHeader(HttpServletResponse response, String accessToken) {
-        response.setHeader(AUTHORIZATION_HEADER, BEARER + accessToken);
+        response.addCookie(CookieUtil.createCookie("refresh_token", refreshToken));
     }
 
-    private void redirectToFrontend(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        getRedirectStrategy().sendRedirect(request, response, REDIRECT_URL);
+    private void redirectToFrontend(HttpServletRequest request, HttpServletResponse response,
+            String redirectUrl) throws IOException {
+        getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
+
+    private String createRedirectUrl(String frontendPath, String tempTokenKey, String nickname) {
+        String frontendUrl = REDIRECT_URL + frontendPath;
+
+        String redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl)  // 프론트엔드 url
+                .queryParam("temp-token", tempTokenKey)
+                .queryParam("nickname", nickname)
+                .build().toUriString();
+        return redirectUrl;
+    }
+    private String redirectToPageByRole(String role, String tempTokenKey, String nickname) {
+        if (role.equals("MEMBER")) {
+            log.info(
+                    "기존 회원 입니다. 임시 토큰으로 accessToken 발급 요청 후 메인 페이지로 리다이렉팅 됩니다.");
+            return createRedirectUrl("/access-token", tempTokenKey, nickname);
+        } else {
+            log.info("신규 회원 입니다. 추가정보 입력을 위한 회원가입 페이지로 리다이렉팅 됩니다 입력 후 임시 토큰으로 accessToken 발급 요청 후 메인 페이지로 리다이렉팅 됩니다.");
+            return createRedirectUrl("/signup", tempTokenKey, nickname);
+        }
+    }
+
 
 }

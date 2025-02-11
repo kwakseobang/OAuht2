@@ -10,7 +10,7 @@ public class JwtCleaner {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public void deleteRefreshToken(String token) {
-        refreshTokenRepository.deleteById(token);
+    public void deleteAccessTokenAndRefreshToken(Long memberId) {
+        refreshTokenRepository.deleteById(memberId);
     }
 }

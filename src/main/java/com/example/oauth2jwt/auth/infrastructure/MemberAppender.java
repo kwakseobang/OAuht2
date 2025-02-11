@@ -9,10 +9,13 @@ import com.example.oauth2jwt.member.domain.RoleType;
 import com.example.oauth2jwt.member.infrastructure.MemberValidator;
 import com.example.oauth2jwt.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class MemberAppender {
 
@@ -32,7 +35,7 @@ public class MemberAppender {
                 .username(username)
                 .password(encodedPassword)
                 .nickname(nickname)
-                .roleType(RoleType.MEMBER)
+                .roleType(RoleType.GUEST)
                 .socialType(SocialType.LOCAL)
                 .build();
         memberRepository.save(member);
