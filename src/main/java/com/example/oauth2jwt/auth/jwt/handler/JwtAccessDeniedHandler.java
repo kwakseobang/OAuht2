@@ -13,9 +13,10 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
-            AccessDeniedException accessDeniedException)
-            throws ServletException, IOException {
+        AccessDeniedException accessDeniedException)
+        throws ServletException, IOException {
         // 접근에 필요한 권한이 없이 접근하려 할때는 Forbidden (403)
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
+
 }

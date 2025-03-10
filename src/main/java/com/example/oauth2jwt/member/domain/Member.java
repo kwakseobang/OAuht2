@@ -2,7 +2,6 @@ package com.example.oauth2jwt.member.domain;
 
 
 import com.example.oauth2jwt.global.domain.BaseEntity;
-import com.example.oauth2jwt.auth.oauth2.domain.SocialType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,7 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name ="member")
+@Table(name = "member")
 @Getter
 @NoArgsConstructor
 @Entity
@@ -23,49 +22,35 @@ public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "username",nullable = false,length = 50)
+    @Column(name = "username", nullable = false, length = 50)
     private String username;
 
-    @Column(name = "password",nullable = true)
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "nickname",nullable = false)
+    @Column(name = "nickname", nullable = false)
     private String nickname;
 
-    @Column(name = "role_type",nullable = false)
+    @Column(name = "role_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
-
-    @Column(name = "profile_img_url",nullable = true)
-    private String profileImgUrl;
-    @Column(name = "social_login_id",nullable = true)
-    private String socialLoginId;
-
-    @Column(name = "social_type",nullable = false)
-    @Enumerated(EnumType.STRING)
-    private SocialType socialType; // 일반 로그인일 경우 Local
-
 
     // 빌더 패턴에서 값이 들어오지 않을 경우 기본 타입은 0,false 같은 타입 저장, 참조 타입은 null
     @Builder(builderClassName = "SaveBuilder", builderMethodName = "SaveBuilder")
     public Member(
-            String username,
-            String password,
-            String nickname,
-            RoleType roleType,
-            String profileImgUrl,
-            String socialLoginId,
-            SocialType socialType
-    ) {
+        Long id, String username,
+        String password,
+        String nickname,
+        RoleType roleType
+        ) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.roleType = roleType;
-        this.profileImgUrl = profileImgUrl;
-        this.socialLoginId = socialLoginId;
-        this.socialType = socialType;
     }
 
     public void updateUsername(String username) {
@@ -75,4 +60,5 @@ public class Member extends BaseEntity {
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
+
 }

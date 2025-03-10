@@ -1,7 +1,7 @@
 package com.example.oauth2jwt.auth.jwt.response;
 
 
-import com.example.oauth2jwt.global.error.ErrorCode;
+import com.example.oauth2jwt.global.response.error.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -18,19 +18,17 @@ public class JwtErrorResponder {
         this.objectMapper = objectMapper;
     }
 
-    public void sendErrorResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
-//        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//        response.setContentType("application/json");
+    public void sendErrorResponse(HttpServletResponse response, ErrorCode errorCode)
+        throws IOException {
         response.setCharacterEncoding("utf-8");
-
         JwtExceptionResponse responseJson = new JwtExceptionResponse(
-                HttpStatus.valueOf(HttpServletResponse.SC_UNAUTHORIZED),
-                errorCode.getHttpStatus(),
-                errorCode.getMessage(),
-                LocalDateTime.now().toString()
+            HttpStatus.valueOf(HttpServletResponse.SC_UNAUTHORIZED),
+            errorCode.getHttpStatus(),
+            errorCode.getMessage(),
+            LocalDateTime.now().toString()
         );
-
         String jsonToString = objectMapper.writeValueAsString(responseJson);
         response.getWriter().write(jsonToString);
     }
+
 }
