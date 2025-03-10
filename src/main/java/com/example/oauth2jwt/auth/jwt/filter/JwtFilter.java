@@ -1,11 +1,11 @@
 package com.example.oauth2jwt.auth.jwt.filter;
 
-import com.example.oauth2jwt.auth.jwt.token.JwtProvider;
-import com.example.oauth2jwt.auth.jwt.token.JwtValidator;
+import static com.example.oauth2jwt.auth.jwt.domain.TokenType.AUTHORIZATION_HEADER;
+import static com.example.oauth2jwt.auth.jwt.domain.TokenType.BEARER_PREFIX;
+
 import com.example.oauth2jwt.auth.jwt.response.JwtErrorResponder;
-import com.example.oauth2jwt.global.error.ErrorCode;
-import com.example.oauth2jwt.utils.HeaderUtil;
-import io.jsonwebtoken.ExpiredJwtException;
+import com.example.oauth2jwt.auth.jwt.token.JwtProvider;
+import com.example.oauth2jwt.global.response.error.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,50 +55,48 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-
     private final JwtProvider jwtProvider;
-    private final JwtValidator jwtValidator;
     private final JwtErrorResponder jwtErrorResponder;
-
     private static final List<String> EXCLUDE_PATHS = List.of(
-            "/swagger/**", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**"
+        "/swagger/**", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**"
     );
     private static final AntPathMatcher pathMatcher = new AntPathMatcher();
+
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
+        HttpServletRequest request,
+        HttpServletResponse response,
+        FilterChain filterChain
     ) throws ServletException, IOException {
-        String token = HeaderUtil.resolveToken(request);
-        // 빈 문자열("")**이나 공백만 있는 문자열은 false
+        String token = getTokenFromHeader(request);
         if (!StringUtils.hasText(token)) {
             jwtErrorResponder.sendErrorResponse(response, ErrorCode.WRONG_AUTH_HEADER);
             return;
         }
-        // JWT에서 토큰을 이용해 인증 정보를 추출 후 UsernamePasswordAuthenticationToken을 생성해 전달
-        // Authentication 객체를 생성하고, 이를 SecurityContext에 설정하여 이후의 요청에서 인증 정보를 사용할 수 있도록 힘
-        try {
-            jwtValidator.validateToken(token);
-            Authentication authentication = jwtProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            filterChain.doFilter(request, response);
-        } catch (ExpiredJwtException e) {
-            jwtErrorResponder.sendErrorResponse(response, ErrorCode.TOKEN_EXPIRED);
-        } catch (Exception e) {
+        if (jwtProvider.validateToken(token)) {
             jwtErrorResponder.sendErrorResponse(response, ErrorCode.TOKEN_ERROR);
+            return;
         }
+        // JWT 에서 토큰을 이용해 인증 정보를 추출 후 UsernamePasswordAuthenticationToken 을 생성해 전달
+        // Authentication 객체를 생성하고, 이를 SecurityContext 에 설정하여 이후의 요청에서 인증 정보를 사용할 수 있도록 힘
+        Authentication authentication = jwtProvider.getAuthentication(token);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        filterChain.doFilter(request, response);
     }
-
-
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
         return EXCLUDE_PATHS.stream()
-                .anyMatch(exclude -> pathMatcher.match(exclude, path));
+            .anyMatch(exclude -> pathMatcher.match(exclude, path));
+    }
+
+    private String getTokenFromHeader(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER.getValue());
+        if (bearerToken != null && bearerToken.startsWith(BEARER_PREFIX.getValue())) {
+            return bearerToken.substring(BEARER_PREFIX.getValue().length());
+        }
+        return null;
     }
 
 }
-
-

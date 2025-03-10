@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @MappedSuperclass // 다른 엔티티들이 BaseTimeEntity 상속할 경우 BaseTimeEntity의 필드를 컬럼으로 인식
 @EntityListeners(AuditingEntityListener.class) // Auditing 기능 포함
 public class BaseEntity {
+
     @CreatedDate
     @Column(name = "created_time", updatable = false)
     private LocalDateTime createdTime;
@@ -20,4 +21,5 @@ public class BaseEntity {
     @LastModifiedDate
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
+
 }
