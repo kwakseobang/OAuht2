@@ -1,8 +1,8 @@
 package com.example.oauth2jwt.auth.controller;
 
+import com.example.oauth2jwt.auth.dto.response.TokenResponse;
 import com.example.oauth2jwt.auth.dto.request.LoginRequestDto;
 import com.example.oauth2jwt.auth.dto.request.SignUpRequestDto;
-import com.example.oauth2jwt.auth.dto.response.AccessTokenResponseDto;
 import com.example.oauth2jwt.auth.service.AuthService;
 import com.example.oauth2jwt.global.response.ResponseData;
 import com.example.oauth2jwt.global.response.success.SuccessCode;
@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +36,7 @@ public class AuthController {
 
     @PostMapping("/login") // 소셜 로그인 이외 로컬 회원가입.
     @Operation(summary = "로그인 [JWT 사용 X]")
-    public ResponseEntity<ResponseData<AccessTokenResponseDto>> login(
+    public ResponseEntity<ResponseData<TokenResponse>> login(
         HttpServletResponse response,
         @RequestBody LoginRequestDto requestDto
     ) {
@@ -46,21 +47,18 @@ public class AuthController {
         );
         return ResponseData.success(
             SuccessCode.LOGIN_SUCCESS,
-            new AccessTokenResponseDto(accessToken)
+            new TokenResponse(accessToken)
         );
     }
 
-//    @PostMapping("/reissue")
-//    public ResponseEntity<ResponseData<AccessTokenResponseDto>> reissue(
-//        HttpServletResponse response,
-//        @CookieValue("refresh_token") final String refreshTokenRequest
-//    ) {
-//        log.info(refreshTokenRequest);
-//        String accessToken = authService.reissue(response, refreshTokenRequest);
-//        return ResponseData.success(
-//            SuccessCode.REISSUE_SUCCESS,
-//            new AccessTokenResponseDto(accessToken)
-//        );
-//    }
+    @PostMapping("/reissue")
+    public ResponseEntity<ResponseData<TokenResponse>> reissue(
+        HttpServletResponse response,
+        @CookieValue("refresh") final String refreshTokenRequest
+    ) {
+        log.info("refresh Token: " + refreshTokenRequest);
+        String accessToken = authService.reissue(response, refreshTokenRequest);
+        return ResponseData.success(SuccessCode.REISSUE_SUCCESS, new TokenResponse(accessToken));
+    }
 
 }

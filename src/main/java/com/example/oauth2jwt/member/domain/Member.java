@@ -34,9 +34,9 @@ public class Member extends BaseEntity {
     @Column(name = "nickname", nullable = false)
     private String nickname;
 
-    @Column(name = "role_type", nullable = false)
+    @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
-    private RoleType roleType;
+    private RoleType role;
 
     // 빌더 패턴에서 값이 들어오지 않을 경우 기본 타입은 0,false 같은 타입 저장, 참조 타입은 null
     @Builder(builderClassName = "SaveBuilder", builderMethodName = "SaveBuilder")
@@ -44,13 +44,13 @@ public class Member extends BaseEntity {
         Long id, String username,
         String password,
         String nickname,
-        RoleType roleType
+        RoleType role
         ) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.nickname = nickname;
-        this.roleType = roleType;
+        this.role = role;
     }
 
     public void updateUsername(String username) {

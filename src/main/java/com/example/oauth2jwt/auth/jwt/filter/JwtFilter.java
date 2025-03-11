@@ -63,6 +63,13 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return EXCLUDE_PATHS.stream()
+            .anyMatch(exclude -> pathMatcher.match(exclude, path));
+    }
+
+    @Override
     protected void doFilterInternal(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -84,12 +91,6 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getRequestURI();
-        return EXCLUDE_PATHS.stream()
-            .anyMatch(exclude -> pathMatcher.match(exclude, path));
-    }
 
     private String getTokenFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER.getValue());

@@ -13,11 +13,11 @@ public enum RoleType {
     GUEST("ROLE_GUEST"),
     ;
 
-    private final String name;
+    private final String value;
 
     public static RoleType of(String code) {
         return Arrays.stream(RoleType.values())
-            .filter(r -> r.getName().equals(code))
+            .filter(r -> r.getValue().equals(code))
             .findAny()
             .orElse(GUEST);
     }

@@ -50,8 +50,8 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(permitAllUrl).permitAll() //모두 허용
-                .requestMatchers(adminUrl).hasRole(RoleType.ADMIN.name()) //
+                .requestMatchers(permitAllUrl).permitAll()
+                .requestMatchers(adminUrl).hasRole(RoleType.ADMIN.name())
                 .requestMatchers(hasRoleUrl).hasAnyRole(
                     RoleType.ADMIN.name(),
                     RoleType.MEMBER.name()

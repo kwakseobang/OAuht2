@@ -27,7 +27,7 @@ public class MemberAppender {
             .username(username)
             .password(bCryptPasswordEncoder.encode(password))
             .nickname(nickname)
-            .roleType(RoleType.MEMBER)
+            .role(RoleType.MEMBER)
             .build();
 
         memberRepository.save(member);
