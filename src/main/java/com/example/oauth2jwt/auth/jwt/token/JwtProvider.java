@@ -13,7 +13,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.annotation.PostConstruct;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import javax.crypto.SecretKey;
@@ -40,11 +39,6 @@ public class JwtProvider {
         this.jwtGenerator = jwtGenerator;
         this.jwtCleaner = jwtCleaner;
         this.secretKey = jwtProperties.getSecretKey(); // TODO: 이거 하나떄문에 의존성 주입..
-    }
-
-    @PostConstruct
-    public void init() {
-
     }
 
     public MemberTokens createTokens(Long memberId, RoleType role) {

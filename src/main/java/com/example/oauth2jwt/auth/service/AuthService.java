@@ -4,16 +4,15 @@ package com.example.oauth2jwt.auth.service;
 import static com.example.oauth2jwt.auth.jwt.domain.TokenType.REFRESH;
 
 import com.example.oauth2jwt.auth.dto.request.SignUpData;
-import com.example.oauth2jwt.member.infrastructure.MemberAppender;
 import com.example.oauth2jwt.auth.jwt.dto.MemberTokens;
 import com.example.oauth2jwt.auth.jwt.token.JwtProvider;
 import com.example.oauth2jwt.member.domain.Member;
+import com.example.oauth2jwt.member.infrastructure.MemberAppender;
 import com.example.oauth2jwt.member.infrastructure.MemberReader;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
